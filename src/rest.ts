@@ -1,19 +1,23 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-
-var _request = require("./request.js");
+import { AnyObject } from "./defs.js";
+import { getJSON } from "./request.js";
 
 class Conference {
-  async scheduleForDay(day, zidx = true) {
-    let days = ["Saturday", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday"].map(function (day) {
+  async scheduleForDay(day: string | number, zidx: boolean = true) {
+    let days = [
+      "Saturday",
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday"
+    ].map(function (day) {
       return day.toLowerCase();
     });
 
-    let d = function () {
+    let d = (function () {
       switch (typeof day) {
         case "string":
           if (days.includes(day)) {
@@ -23,7 +27,8 @@ class Conference {
           }
 
         case "number":
-          if (Math.floor(day) !== day) throw new Error("Day of week must be an integer");
+          if (Math.floor(day) !== day)
+            throw new Error("Day of week must be an integer");
 
           if (zidx) {
             if (day < 6 && day >= 0) {
@@ -38,43 +43,41 @@ class Conference {
 
             throw new Error(`${day} is not a valid day of the week`);
           }
-
       }
-    }();
+    })();
 
-    return await (0, _request.getJSON)({
+    return await getJSON({
       hostname: "api.scratch.mit.edu",
       path: `/conference/schedule/${d}`
     });
   }
 
-  async detailsFor(id) {
-    return await (0, _request.getJSON)({
+  async detailsFor(id: number | string) {
+    return await getJSON({
       hostname: "api.scratch.mit.edu",
       path: `/conference/${id}/details`
     });
   }
-
 }
 
 class Users {
-  async get(username) {
-    return await (0, _request.getJSON)({
+  async get(username: string) {
+    return await getJSON({
       hostname: "api.scratch.mit.edu",
       path: `/users/${username}`
     });
   }
 
-  async getFollowing(username) {
-    let following = [];
+  async getFollowing(username: string) {
+    let following: AnyObject[] = [];
     let offset = 0;
 
     while (true) {
-      let batch = await (0, _request.getJSON)({
+      let batch = await getJSON({
         hostname: "api.scratch.mit.edu",
         path: `/users/${username}/following?limit=40&offset=${offset}`
       });
-      following = following.concat(batch);
+      following = following.concat(Array.isArray(batch) ? batch : []);
 
       if (batch.length < 40) {
         return following;
@@ -84,12 +87,12 @@ class Users {
     }
   }
 
-  async getFollowers(username) {
-    let followers = [];
+  async getFollowers(username: string) {
+    let followers: AnyObject[] = [];
     let offset = 0;
 
     while (true) {
-      let batch = await (0, _request.getJSON)({
+      let batch = await getJSON({
         hostname: "api.scratch.mit.edu",
         path: `/users/${username}/followers?limit=40&offset=${offset}`
       });
@@ -102,24 +105,23 @@ class Users {
       offset += 40;
     }
   }
-
 }
 
 const Rest = {
   Conference: new Conference(),
   Users: new Users(),
   getHealth: function () {
-    return (0, _request.getJSON)({
+    return getJSON({
       hostname: "api.scratch.mit.edu",
       path: "/health"
     });
   },
   getNews: function () {
-    return (0, _request.getJSON)({
+    return getJSON({
       hostname: "api.scratch.mit.edu",
       path: "/news"
     });
   }
 };
-var _default = Rest;
-exports.default = _default;
+
+export default Rest;
