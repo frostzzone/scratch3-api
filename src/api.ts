@@ -19,6 +19,6 @@ const Scratch: ScratchAPI = {
   Rest
 };
 
-export { UserSession, CloudSession, Projects, Rest };
+module.exports = Scratch;
 
 export default Scratch;

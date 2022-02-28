@@ -243,7 +243,7 @@ class CloudSession extends EventEmitter {
    * @param {string} n - The name of the variable.
    * @param {number|string} v - The value to set the variable to.
    */
-  set(n: string, v: number | string) {
+  set(n: string, v: number) {
     if (isNaN(Number(v)))
       console.warn("Only number values can be stored in cloud variables.");
     this._variables[n] = v;
@@ -265,7 +265,7 @@ class CloudSession extends EventEmitter {
    * @param {string} [s=""] - The string to convert.
    * @returns {string} A sequence of numbers representing the input string.
    */
-  numerify(str: string = ""): string {
+  numerifyencode(str: string = ""): string {
     const chars: string =
       "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!#$%()*+,-./\\:;=?@[]^_`{|}~\"'&<> ";
     let r: string = "";

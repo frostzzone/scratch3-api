@@ -2,7 +2,7 @@
 
 *.prettierignore
 
-test.cjs
+test.js
 
 node_modules/
 
